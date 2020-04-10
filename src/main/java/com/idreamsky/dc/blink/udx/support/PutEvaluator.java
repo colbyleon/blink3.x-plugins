@@ -1,4 +1,4 @@
-package com.idreamsky.dc.blink.udx.notexist;
+package com.idreamsky.dc.blink.udx.support;
 
 import com.idreamsky.dc.blink.common.utils.GLogger;
 import com.idreamsky.dc.blink.common.utils.GLoggerFactory;

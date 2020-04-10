@@ -3,7 +3,7 @@
 - mvn clean package 打包后会出现 dsky-blink-1.0-SNAPSHOT.jar 和 dsky-blink-dependency.jar 两个包  
 分别是业务包和依赖包  
 - KafkaSink和HdfsSink 只需要引入业务包资源即可
-- HBaseSetIfNotExistUdf 需要两个包同时引入
+- HBaseSetIfNotExistUdf、HBaseIsExistUdf 需要两个包同时引入
 
 # 一、KafkaSink 说明  
 
@@ -133,3 +133,37 @@ FROM row_view
 | columnName | 列名，配置了默认列名时可以不填 |
 >ps: 总之这四个值都得有，不是在作业参数配置就是在调用时指定
 
+
+# 四、HBaseIsExistUdf 说明 
+### 功能 
+>检查 rowKey 是否已经存在，存在返回 1 否则返回0 
+
+### 使用示例  
+```
+CREATE FUNCTION is_exist AS 'com.idreamsky.dc.blink.udx.HBaseIsExistUdf';
+
+insert into print_sink
+select 
+    sum(is_exist(rowKey)) as num
+FROM random_source
+```  
+
+### 作业参数
+
+| 参数名 | 默认值  | 说明 |
+| ----- | --------- | --- |
+| hbase.table.name | new_user| hbase的默认表名，不填则调用函数时必填 |
+| hbase.zookeeper.quorum | 已设置为线上默认值 |  hbase的zk地址|
+| hbase.client.username | 已设置为线上默认值 |  |
+| hbase.client.password | 已设置为线上默认值 |  |
+
+### 函数调用方法
+
+- Long eval(String rowKey)  
+- Long eval(String rowKey, String tableName) 
+
+| 参数名 |  说明 |
+| ----- |  --- |
+| rowKey |  hbase的rowKey |
+| tableName |  hbase 的表名，配置了默认表名时可以不填 |
+>ps: 总之这两个个值都得有，不是在作业参数配置就是在调用时指定
